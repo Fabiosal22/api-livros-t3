@@ -150,7 +150,7 @@ def listar_livros():
             "imagem_url": livro[4]
         }
     # append - pega tudo e adiciona
-    livros_formatados.append(dicionario_livros)
+        livros_formatados.append(dicionario_livros)
     return jsonify(livros_formatados)
 
 
