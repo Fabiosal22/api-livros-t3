@@ -64,12 +64,13 @@
 
 # Por ele já ser integrado ao python não precisamos baixar, apenas importar
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import sqlite3
-
+from flask_cors import CORS
 
 # -dunder name  '__name__ ' para setar que vai rodar a biblioteca no arquivo app.py no principal
 app = Flask(__name__)
+CORS(app)
 
 # Função que irá iniciar o banco de dados
 
@@ -100,7 +101,7 @@ init_db()
 # o @ antes do app é um decorador para simplificar a rota ex: / é a rota principal
 @app.route('/')
 def home_page():
-    return "<h3>Meu desafio Api T3</h3>"
+    return render_template('index.html')
 
 
 @app.route('/doar', methods=['POST'])  # porta
@@ -152,6 +153,20 @@ def listar_livros():
     # append - pega tudo e adiciona
         livros_formatados.append(dicionario_livros)
     return jsonify(livros_formatados)
+
+
+@app.route('/livros/<int:livro_id>', methods=['DELETE'])
+def deletar_livro(livro_id):
+    with sqlite3.connect('database.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM livros WHERE id = ?", (livro_id,))
+        conn.commit()
+
+
+    if cursor.rowcount == 0:
+        return jsonify({"erro": "Livro não encontrado"}), 404
+
+    return jsonify({"menssagem": "Livro Excluido com sucesso"}), 200    
 
 
 if __name__ == "__main__":
